@@ -16,6 +16,8 @@
 # 
 # Written by: Dr. Yiqun Chen    yiqun.c@unimelb.edu.au
 # DevLogs:
+# v2.7 2017-08-19
+# (1) add utils.loadGeoJSON2SPWithAuth and utils.loadGeoJSON2DFWithAuth methods to access wfs protected auth info
 #
 # v2.6 2017-08-15
 # (1) add utils.project2WGS84 method
@@ -138,6 +140,52 @@ utils.loadGeoJSON2SP <- function(url){
   
 }
 
+#' load geojson from url (username/password protected) into a sp object
+#'
+#' @param url A geojson url string
+#' @param username username required to access url
+#' @param password password required to access url
+#'
+#' @return A sp object
+#' @export
+#'
+#' @examples
+utils.loadGeoJSON2SPWithAuth <- function(url, username, password){
+  
+  # create a unique temp file name for geojson
+  tmpFilePath = sprintf("%s\\%s.geojson", globalGSCredentials$tempDirPath, UUIDgenerate(FALSE))
+  
+  # if tempDirPath not existed, create
+  if(dir.exists(globalGSCredentials$tempDirPath)==FALSE){
+    
+    dir.create(globalGSCredentials$tempDirPath, showWarnings=FALSE, recursive=TRUE)
+    
+    utils.debugprint(sprintf("%s created",globalGSCredentials$tempDirPath))
+  }
+  
+  spobj <- tryCatch(
+    {
+      # load data from url
+      geojson = getURL(url, timeout=36000, userpwd=paste(username, password, sep=":"), httpauth = 1L)
+      
+      # save data as a local copy
+      write(geojson, tmpFilePath)
+      
+      # load it as sp object
+      readOGR(tmpFilePath, "OGRGeoJSON")
+    },
+    error=function(cond) {
+      return(NULL)
+    },
+    finally={
+      # remove local temp file
+      file.remove(tmpFilePath)
+    }
+  )    
+  return(spobj)
+  
+}
+
 #' load geojson from url into a data.frame object. this is particularly useful to handle geojson wfsurl with null geometry
 #'
 #' @param url A geojson url string
@@ -162,6 +210,38 @@ utils.loadGeoJSON2DF <- function(url){
     },
     finally={
 
+    }
+  )    
+  return(dfobj)
+  
+}
+
+#' load geojson from url (username/password protected) into a data.frame object. this is particularly useful to handle geojson wfsurl with null geometry
+#'
+#' @param url A geojson url string
+#' @param username username required to access url
+#' @param password password required to access url
+#' 
+#' @return A data.frame object
+#' @export
+#'
+#' @examples
+utils.loadGeoJSON2DFWithAuth <- function(url, username, password){
+  
+  dfobj <- tryCatch(
+    {
+      # load data from url
+      geojson = getURL(url, timeout=36000, userpwd=paste(username, password, sep=":"), httpauth = 1L)
+      
+      tmp = fromJSON(geojson)
+      # only return the properties data frame
+      tmp$features$properties
+    },
+    error=function(cond) {
+      return(NULL)
+    },
+    finally={
+      
     }
   )    
   return(dfobj)

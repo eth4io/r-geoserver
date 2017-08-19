@@ -228,3 +228,22 @@ execIndicatorGreenArea <- function(){
 
 execIndicatorGreenArea()
 
+accessWFSWithAuth <- function(){
+  
+  # this wfs is protected by username/password
+  wfsurl = "http://115.146.92.213:8080/geoserver/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=topp:tasmania_cities&outputFormat=json"
+  username = "wfs_reader"
+  password = "wfs_password"
+  
+  sp = utils.loadGeoJSON2SPWithAuth(wfsurl, username, password)
+  #sp_failed  = utils.loadGeoJSON2SP(wfsurl)
+  
+  # load dataframe
+  wfsurl2 = "http://115.146.92.213:8080/geoserver/wfs?service=wfs&version=1.0.0&request=GetFeature&propertyName=CITY_NAME,ADMIN_NAME&typeName=topp:tasmania_cities&outputFormat=json"
+
+  df = utils.loadGeoJSON2DFWithAuth(wfsurl2, username, password)
+  #df_failed  = utils.loadGeoJSON2DF(wfsurl2)
+  
+}
+
+

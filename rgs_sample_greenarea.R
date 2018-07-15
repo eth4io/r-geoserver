@@ -1,5 +1,5 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#  Copyright 2016-2017 University of Melbourne
+#  Copyright 2016-2018 University of Melbourne
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,10 @@
 #
 # DevLogs:
 #
+# v1.1 2018-07-15
+# (1) update urls 
 # v1.0 2017-07-18
+# (1) init commitment 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 library(maptools) 
@@ -228,22 +231,25 @@ execIndicatorGreenArea <- function(){
 
 execIndicatorGreenArea()
 
+
+# this example shows how to access WFS resources protected by user authentication
 accessWFSWithAuth <- function(){
   
-  # this wfs is protected by username/password
-  wfsurl = "http://115.146.92.213:8080/geoserver/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=topp:tasmania_cities&outputFormat=json"
+  # the follwoing wfs resources are protected by username/password
   username = "wfs_reader"
   password = "wfs_password"
   
-  sp = utils.loadGeoJSON2SPWithAuth(wfsurl, username, password)
-  #sp_failed  = utils.loadGeoJSON2SP(wfsurl)
+  
+  wfsurl_1 = "http://115.146.84.209:8080/geoserver/wfs?service=wfs&version=1.0.0&request=GetFeature&typeName=topp:tasmania_cities&outputFormat=json"
+  
+  sp = utils.loadGeoJSON2SPWithAuth(wfsurl_1, username, password)
+
   
   # load dataframe
-  wfsurl2 = "http://115.146.92.213:8080/geoserver/wfs?service=wfs&version=1.0.0&request=GetFeature&propertyName=CITY_NAME,ADMIN_NAME&typeName=topp:tasmania_cities&outputFormat=json"
+  wfsurl_2 = "http://115.146.84.209:8080/geoserver/wfs?service=wfs&version=1.0.0&request=GetFeature&propertyName=CITY_NAME,ADMIN_NAME&typeName=topp:tasmania_cities&outputFormat=json"
 
-  df = utils.loadGeoJSON2DFWithAuth(wfsurl2, username, password)
-  #df_failed  = utils.loadGeoJSON2DF(wfsurl2)
-  
+  df = utils.loadGeoJSON2DFWithAuth(wfsurl_2, username, password)
+
 }
 
 

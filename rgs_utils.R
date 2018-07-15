@@ -1,5 +1,5 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#  Copyright 2016-2017 University of Melbourne
+#  Copyright 2016-2018 University of Melbourne
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
 # 
 # Written by: Dr. Yiqun Chen    yiqun.c@unimelb.edu.au
 # DevLogs:
+# v2.8 2018-07-15
+# (1) update loadGeoJSON2SP and loadGeoJSON2SPWithAuth methods so it can work with Mac/Linux and windows
+
 # v2.7 2017-08-19
 # (1) add utils.loadGeoJSON2SPWithAuth and utils.loadGeoJSON2DFWithAuth methods to access wfs protected auth info
 #
@@ -66,9 +69,9 @@ library(XML)
 # this variable contains all credentials for accessing a geoserver instance to publish data layers and create styles
 globalGSCredentials = list()
 
-globalGSCredentials["gsRESTURL"] = "http://115.146.93.93:8080/geoserver" #change it to your own geoserver url
+globalGSCredentials["gsRESTURL"] = "http://115.146.85.153:8080/geoserver" #change it to your own geoserver url
 globalGSCredentials["gsRESTUSER"] = "admin" #change it to your own geoserver username (admin role required) 
-globalGSCredentials["gsRESTPW"] = "sdiTestbed2017" #change it to your own password 
+globalGSCredentials["gsRESTPW"] = "nk39qc12" #change it to your own password 
 globalGSCredentials["gsWORKSPACENAME"] = "a2z_ws_unique_student_id" #change it to your own unique workspace name, a new workspace will be automatically created if it does not exist  
 globalGSCredentials["gsDATASTORESNAME"] = "a2z_ds_unique_student_id" #change it to your own unique datastore name, a new datastore will be automatically created if it does not exist 
 globalGSCredentials["tempDirPath"] = sprintf("%s/%s",getwd(),"tempdata")
@@ -126,7 +129,8 @@ utils.loadGeoJSON2SP <- function(url){
       write(geojson, tmpFilePath)
 
       # load it as sp object
-      readOGR(tmpFilePath, "OGRGeoJSON")
+      #readOGR(tmpFilePath, "OGRGeoJSON")
+      readOGR(tmpFilePath, disambiguateFIDs=TRUE)
     },
     error=function(cond) {
       return(NULL)
@@ -172,7 +176,8 @@ utils.loadGeoJSON2SPWithAuth <- function(url, username, password){
       write(geojson, tmpFilePath)
       
       # load it as sp object
-      readOGR(tmpFilePath, "OGRGeoJSON")
+      #readOGR(tmpFilePath, "OGRGeoJSON")
+      readOGR(tmpFilePath, disambiguateFIDs=TRUE)
     },
     error=function(cond) {
       return(NULL)
@@ -699,6 +704,7 @@ utils.createWMSStyle <- function(wfsurl, attrname, palettename="Reds", colorreve
   createStyleUrl = sprintf("%s%s%s",createStyleUrl, "&gsresturl=", URLencode(globalGSCredentials$gsRESTURL,reserved=TRUE))
   createStyleUrl = sprintf("%s%s%s",createStyleUrl, "&gsusername=", globalGSCredentials$gsRESTUSER)
   createStyleUrl = sprintf("%s%s%s",createStyleUrl, "&gspassword=", globalGSCredentials$gsRESTPW)
+  
   return (getURL(createStyleUrl))
 }
 

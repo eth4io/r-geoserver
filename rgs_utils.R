@@ -256,7 +256,7 @@ utils.loadGeoJSON2DFWithAuth <- function(url, username, password){
 
 #' publish a sp object to geoserver using RESTful API via curl
 #'
-#' @param spobj A sp object
+#' @param spobj A sp object. *IMPORTANT: Each column of spobj MUST NOT have attribute name exceeding length (int)10, failed to do so may result in NO Style being generated on GeoServer*
 #'
 #' @return A wfs url string of successfully published data layer
 #' @export
@@ -315,7 +315,7 @@ utils.publishSP2GeoServer <- function(spobj){
 #
 #' publish a sp object to geoserver with wms stlying information
 #'
-#' @param spobj a sp object
+#' @param spobj a sp object. *IMPORTANT: Each column of spobj MUST NOT have attribute name exceeding length (int)10, failed to do so may result in NO Style being generated on GeoServer* 
 #' @param displayname a readable display name for data layer
 #' @param attrname the attribute name that the style will be created for
 #' @param palettename check colors defined under each palette name at http://colorbrewer2.org 
@@ -386,7 +386,7 @@ utils.publishSP2GeoServerWithStyle <- function(spobj,
 
 #' publish a sp object to geoserver with multiple wms stlying information
 #'
-#' @param spobj a sp object
+#' @param spobj a sp object. *IMPORTANT: Each column of spobj MUST NOT have attribute name exceeding length (int)10, failed to do so may result in NO Style being generated on GeoServer*
 #' @param displayname_vec a vector of readable display names for data layer
 #' @param attrname_vec a vector of attribute names that the style will be created for
 #' @param palettename_vec a vector of palette names. check colors defined under each palette name at http://colorbrewer2.org 
